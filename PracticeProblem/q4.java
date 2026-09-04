@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class FirstNonRepeating {
+public class q4 {
 
     static char findFirstNonRepeatingChar(String text) {
 
