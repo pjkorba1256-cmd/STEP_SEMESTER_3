@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class q5 {
+public class q2 {
 
     static boolean isPalindrome(String text) {
 
