@@ -1,37 +1,63 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class q3 {
 
-    static boolean isPalindrome(String text) {
+    static String getBmiStatus(double bmi) {
 
-        int start = 0;
-        int end = text.length() - 1;
-
-        while (start < end) {
-
-            if (text.charAt(start) != text.charAt(end)) {
-                return false;
-            }
-
-            start++;
-            end--;
+        if (bmi < 18.5) {
+            return "Underweight";
         }
+        else if (bmi < 25) {
+            return "Normal";
+        }
+        else if (bmi < 30) {
+            return "Overweight";
+        }
+        else {
+            return "Obese";
+        }
+    }
 
-        return true;
+    static void printWellnessReport(double[] heights, double[] weights) {
+
+        System.out.println("\n------------------------------------------------");
+        System.out.println("Person\tHeight\tWeight\tBMI\tStatus");
+        System.out.println("------------------------------------------------");
+
+        for (int i = 0; i < heights.length; i++) {
+
+            double bmi = weights[i] / (heights[i] * heights[i]);
+
+            String status = getBmiStatus(bmi);
+
+            System.out.printf(
+                    "%d\t%.2f\t%.2f\t%.2f\t%s\n",
+                    i + 1,
+                    heights[i],
+                    weights[i],
+                    bmi,
+                    status
+            );
+        }
     }
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Enter a word: ");
-        String text = sc.next();
+        double[] heights = new double[5];
+        double[] weights = new double[5];
 
-        if (isPalindrome(text)) {
-            System.out.println("Palindrome");
-        } else {
-            System.out.println("Not Palindrome");
+        for (int i = 0; i < 5; i++) {
+
+            System.out.print("Enter height of person " + (i + 1) + " (m): ");
+            heights[i] = sc.nextDouble();
+
+            System.out.print("Enter weight of person " + (i + 1) + " (kg): ");
+            weights[i] = sc.nextDouble();
         }
+
+        printWellnessReport(heights, weights);
 
         sc.close();
     }
