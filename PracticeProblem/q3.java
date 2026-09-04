@@ -1,63 +1,37 @@
-import java.util.*;
+import java.util.Scanner;
 
-public class BMICalculator {
+public class q3 {
 
-    static String getBmiStatus(double bmi) {
+    static boolean isPalindrome(String text) {
 
-        if (bmi < 18.5) {
-            return "Underweight";
+        int start = 0;
+        int end = text.length() - 1;
+
+        while (start < end) {
+
+            if (text.charAt(start) != text.charAt(end)) {
+                return false;
+            }
+
+            start++;
+            end--;
         }
-        else if (bmi < 25) {
-            return "Normal";
-        }
-        else if (bmi < 30) {
-            return "Overweight";
-        }
-        else {
-            return "Obese";
-        }
-    }
 
-    static void printWellnessReport(double[] heights, double[] weights) {
-
-        System.out.println("\n------------------------------------------------");
-        System.out.println("Person\tHeight\tWeight\tBMI\tStatus");
-        System.out.println("------------------------------------------------");
-
-        for (int i = 0; i < heights.length; i++) {
-
-            double bmi = weights[i] / (heights[i] * heights[i]);
-
-            String status = getBmiStatus(bmi);
-
-            System.out.printf(
-                    "%d\t%.2f\t%.2f\t%.2f\t%s\n",
-                    i + 1,
-                    heights[i],
-                    weights[i],
-                    bmi,
-                    status
-            );
-        }
+        return true;
     }
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
 
-        double[] heights = new double[5];
-        double[] weights = new double[5];
+        System.out.print("Enter a word: ");
+        String text = sc.next();
 
-        for (int i = 0; i < 5; i++) {
-
-            System.out.print("Enter height of person " + (i + 1) + " (m): ");
-            heights[i] = sc.nextDouble();
-
-            System.out.print("Enter weight of person " + (i + 1) + " (kg): ");
-            weights[i] = sc.nextDouble();
+        if (isPalindrome(text)) {
+            System.out.println("Palindrome");
+        } else {
+            System.out.println("Not Palindrome");
         }
-
-        printWellnessReport(heights, weights);
 
         sc.close();
     }
