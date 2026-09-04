@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class RockPaperScissors {
+public class q1 {
 
     static String playRound(String playerMove, String computerMove) {
 
