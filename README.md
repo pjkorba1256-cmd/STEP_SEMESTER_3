@@ -12,10 +12,10 @@
 
 | Week | Practice | Assignment |
 |------|----------|------------|
-| Week 1 | ✅ Completed | ✅ Completed |
-| Week 2 | ✅ Completed | ✅ Completed |
-| Week 3 | ✅ Completed | ✅ Completed |
-| Week 4 | ✅ Completed | ✅ Completed |
-| Week 5 | ✅ Completed | ✅ Completed |
+| Week 1 |  Completed |  Completed |
+| Week 2 |  Completed |  Completed |
+| Week 3 |  Completed |  Completed |
+| Week 4 |  Completed |  Completed |
+| Week 5 |  Completed |  Completed |
 
-### 🎉 All Practice & Assignment Problems for Weeks 1–5 Completed
+###  All Practice & Assignment Problems for Weeks 1–5 Completed
