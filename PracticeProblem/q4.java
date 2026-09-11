@@ -1,39 +1,46 @@
-class SrmStudent {
+class MovieBookingProfile {
 
-    String name;
-
-    static String collegeName;
-    static int academicYear;
-
-    static {
-        collegeName = "SRM Institute of Science and Technology";
-        academicYear = 2026;
-
-        System.out.println("College info loaded");
+    private String name;
+    private boolean confirmed;
+    private String otp;
+    public MovieBookingProfile() {
+        name = "";
+        confirmed = false;
     }
-
-    SrmStudent(String name) {
+    public MovieBookingProfile(String name) {
+        this();
         this.name = name;
-
-        System.out.println(
-            "Student record created: " + name
-        );
     }
-}
 
-public class q4 {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+}class q4 {
     public static void main(String[] args) {
 
-        String[] names = {
-            "Ravi",
-            "Meera",
-            "Karthik",
-            "Divya",
-            "Anitha"
-        };
+        MovieBookingProfile p =
+            new MovieBookingProfile("Rahul Dev");
 
-        for (String name : names) {
-            new SrmStudent(name);
-        }
+        System.out.println(p.getName());
+
+        p.setConfirmed(true);
+        System.out.println(p.isConfirmed());
+
+        p.setOtp("4471");
     }
 }

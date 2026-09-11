@@ -1,45 +1,83 @@
-class MembershipCard {
+import java.security.MessageDigest;
 
-    static String libraryName;
-    static String validUntil;
+class LibraryMember {
 
-    String studentName;
+    private String membershipId;
+    private String name;
+    private boolean premiumMember;
+    private String securityAnswer;
 
-    static {
-        libraryName = "SRM Central Library";
-        validUntil = "May 2027";
+    private boolean membershipIdSet = false;
 
-        System.out.println("Library info loaded");
+    public LibraryMember() {
     }
 
-    MembershipCard(String studentName) {
-        this.studentName = studentName;
+    public String getMembershipId() {
+        return membershipId;
     }
 
-    void printConfirmation() {
-        System.out.println(
-            "Membership card issued: " + studentName
-        );
+    public void setMembershipId(String id) {
+        if (!membershipIdSet) {
+            membershipId = id;
+            membershipIdSet = true;
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isPremiumMember() {
+        return premiumMember;
+    }
+
+    public void setPremiumMember(boolean premium) {
+        this.premiumMember = premium;
+    }
+
+    public void setSecurityAnswer(String answer) {
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            byte[] hash = md.digest(answer.getBytes());
+
+            StringBuilder result = new StringBuilder();
+
+            for (byte b : hash) {
+                result.append(String.format("%02x", b));
+            }
+
+            securityAnswer = result.toString();
+
+        } catch (Exception e) {
+            securityAnswer = "";
+        }
     }
 }
 
 public class q4 {
+
     public static void main(String[] args) {
 
-        String[] names = {
-            "Ananya",
-            "Rohan",
-            "Priya",
-            "Arjun",
-            "Sneha"
-        };
+        LibraryMember m = new LibraryMember();
 
-        for (String name : names) {
+        m.setMembershipId("LIB-8841");
+        m.setName("Priya Nair");
+        m.setPremiumMember(true);
 
-            MembershipCard card =
-                new MembershipCard(name);
+        System.out.println(m.getMembershipId());
 
-            card.printConfirmation();
-        }
+        m.setMembershipId("FAKE-0000");
+
+        System.out.println(m.getMembershipId());
+
+        System.out.println(m.isPremiumMember());
+
+        m.setSecurityAnswer("BlueMountain");
     }
 }

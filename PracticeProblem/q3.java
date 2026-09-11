@@ -1,67 +1,45 @@
-class FeeAccount {
+class CineScreen {
 
-    String regNo;
-    double totalFee;
+    private int seatsTotal;
+    private int seatsAvailable;
 
-    FeeAccount(String regNo, double totalFee) {
-        this.regNo = regNo;
-        this.totalFee = totalFee;
+    CineScreen(int seatsTotal) {
+        if (seatsTotal <= 0)
+            throw new IllegalArgumentException("construction rejected");
+
+        this.seatsTotal = seatsTotal;
+        this.seatsAvailable = seatsTotal;
     }
 
-    final double calculateLateFee(int daysLate) {
-        return daysLate * 2000;
+    void bookSeat() {
+        if (seatsAvailable > 0)
+            seatsAvailable--;
     }
 
-    final void printSummary(int daysLate) {
+    void cancelBooking() {
+        if (seatsAvailable < seatsTotal)
+            seatsAvailable++;
+    }
 
-        if (daysLate <= 0) {
-            System.out.println(
-                regNo + " - On time, no late fee"
-            );
-        } else {
-            double lateFee = calculateLateFee(daysLate);
-
-            System.out.println(
-                regNo +
-                " | Total Fee: Rs " +
-                totalFee +
-                " | Late Fee: Rs " +
-                lateFee
-            );
-        }
+    int getSeatsAvailable() {
+        return seatsAvailable;
     }
 }
-
 public class q3 {
     public static void main(String[] args) {
 
-        String[] regNos = {
-            "RA001",
-            "RA002",
-            "RA003",
-            "RA004"
-        };
+        CineScreen c = new CineScreen(2);
 
-        double[] totalFees = {
-            200000,
-            150000,
-            180000,
-            220000
-        };
+        c.bookSeat();
+        c.bookSeat();
+        c.bookSeat();
 
-        int[] daysLate = {
-            10,
-            0,
-            -2,
-            5
-        };
+        System.out.println(c.getSeatsAvailable()); 
 
-        for (int i = 0; i < regNos.length; i++) {
+        c.cancelBooking();
+        c.cancelBooking();
+        c.cancelBooking();
 
-            FeeAccount account =
-                new FeeAccount(regNos[i], totalFees[i]);
-
-            account.printSummary(daysLate[i]);
-        }
+        System.out.println(c.getSeatsAvailable()); 
     }
 }

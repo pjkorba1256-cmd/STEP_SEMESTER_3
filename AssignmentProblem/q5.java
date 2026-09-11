@@ -1,78 +1,119 @@
-class Payment {
+import java.util.Arrays;
 
-    double pay(double amount) {
+class LoanReceipt {
 
-        System.out.println(
-            "Paid (cash): Rs " + amount
-        );
+    private final String memberId;
+    private final String[] bookIds;
 
-        return amount;
+    public LoanReceipt(String memberId, String[] bookIds) {
+        this.memberId = memberId;
+        this.bookIds = Arrays.copyOf(bookIds, bookIds.length);
+    }
+
+    public String[] getBookIds() {
+        return Arrays.copyOf(bookIds, bookIds.length);
+    }
+
+    public LoanReceipt withCorrectedBookId(int index, String newId) {
+
+        String[] newBookIds = Arrays.copyOf(bookIds, bookIds.length);
+
+        if (index >= 0 && index < newBookIds.length) {
+            newBookIds[index] = newId;
+        }
+
+        return new LoanReceipt(memberId, newBookIds);
     }
 }
 
-class CardPayment extends Payment {
+class ReferenceOnlyLoanReceipt extends LoanReceipt {
 
-    double payWithProcessingFee(double amount) {
+    private final String roomNumber;
 
-        double total = amount + (amount * 0.02);
+    public ReferenceOnlyLoanReceipt(
+            String memberId,
+            String[] bookIds,
+            String roomNumber) {
 
-        System.out.println(
-            "Charged (card, incl. fee): Rs " + total
-        );
+        super(memberId, bookIds);
+        this.roomNumber = roomNumber;
+    }
+}
 
-        return total;
+class CirculationLedger {
+
+    private static String branchCode;
+
+    static {
+        branchCode = "BRANCH-001";
+    }
+
+    static String processNightlyCirculation(LoanReceipt[] receipts) {
+
+        int processed = 0;
+        int nullSkipped = 0;
+        int referenceOnly = 0;
+        int regular = 0;
+
+        for (LoanReceipt receipt : receipts) {
+
+            if (receipt == null) {
+                nullSkipped++;
+                continue;
+            }
+
+            processed++;
+
+            if (receipt instanceof ReferenceOnlyLoanReceipt) {
+                referenceOnly++;
+            } else {
+                regular++;
+            }
+        }
+
+        return processed + " processed | "
+                + nullSkipped + " null skipped | "
+                + referenceOnly + " reference-only | "
+                + regular + " regular";
     }
 }
 
 public class q5 {
 
-    static double totalCollected = 0;
-
-    static void processTransaction(
-        Payment payment,
-        double amount
-    ) {
-
-        if (payment instanceof CardPayment) {
-
-            CardPayment card =
-                (CardPayment) payment;
-
-            totalCollected +=
-                card.payWithProcessingFee(amount);
-
-        } else {
-
-            totalCollected +=
-                payment.pay(amount);
-        }
-    }
-
     public static void main(String[] args) {
 
-        Payment[] payments = {
-            new CardPayment(),
-            new Payment(),
-            new CardPayment(),
-            new Payment(),
-            new CardPayment()
+        LoanReceipt r = new LoanReceipt(
+                "LIB-8841",
+                new String[]{"BK-100", "BK-101"}
+        );
+
+        String[] ids = r.getBookIds();
+
+        ids[0] = "HACKED";
+
+        System.out.println(r.getBookIds()[0]);
+
+        LoanReceipt corrected =
+                r.withCorrectedBookId(1, "BK-102");
+
+        System.out.println(Arrays.toString(r.getBookIds()));
+        System.out.println(Arrays.toString(corrected.getBookIds()));
+
+        LoanReceipt[] receipts = {
+            new ReferenceOnlyLoanReceipt(
+                "LIB-001",
+                new String[]{"BK-200"},
+                "Reading Room 3"
+            ),
+            null,
+            new LoanReceipt(
+                "LIB-002",
+                new String[]{"BK-201"}
+            )
         };
-
-        double[] amounts = {
-            100, 50, 200, 75, 120
-        };
-
-        for (int i = 0; i < payments.length; i++) {
-
-            processTransaction(
-                payments[i],
-                amounts[i]
-            );
-        }
 
         System.out.println(
-            "Total Collected: Rs " +
-            totalCollected
+            CirculationLedger.processNightlyCirculation(receipts)
         );
     }
 }

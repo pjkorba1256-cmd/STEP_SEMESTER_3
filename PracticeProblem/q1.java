@@ -1,52 +1,88 @@
-class LibraryBook {
+class AccessChecker {
 
-    String title;
-    String isbn;
+    static String classifyAccess(String fieldModifier, String accessorContext) {
 
-    LibraryBook(String title, String isbn) {
-        this.title = title;
-        this.isbn = isbn;
+        if (fieldModifier.equals("private")) {
+            if (accessorContext.equals("SAME_CLASS")) {
+                return "ALLOWED";
+            } else {
+                return "DENIED";
+            }
+        }
+
+        if (fieldModifier.equals("default")) {
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE")) {
+                return "ALLOWED";
+            } else {
+                return "DENIED";
+            }
+        }
+
+        if (fieldModifier.equals("protected")) {
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE")) {
+                return "ALLOWED";
+            } else {
+                return "DENIED";
+            }
+        }
+
+        if (fieldModifier.equals("public")) {
+            return "ALLOWED";
+        }
+
+        return "DENIED";
     }
 
-    LibraryBook(String title) {
-        this(title, "PENDING");
-    }
+    static String summarizeBatch(String[][] attempts) {
 
-    void printStatus() {
-        System.out.println(
-            title + " | " + isbn + " | Catalogued: true"
-        );
+        int allowed = 0;
+        int denied = 0;
+
+        for (String[] attempt : attempts) {
+            String result = classifyAccess(attempt[0], attempt[1]);
+
+            if (result.equals("ALLOWED")) {
+                allowed++;
+            } else {
+                denied++;
+            }
+        }
+
+        return "Allowed: " + allowed + " | Denied: " + denied;
     }
 }
 
-public class q1 {
+
+class MovieTicket {
+
+    private int seatNumber;
+    String screenId;        
+    protected double ticketPrice;
+    public String movieTitle;
+
+}
+class q1 {
+
     public static void main(String[] args) {
 
-        String[] titles = {
-            "Clean Code",
-            "Untitled Draft",
-            "1984",
-            "Notes"
+        System.out.println(
+            AccessChecker.classifyAccess("private", "SAME_CLASS")
+        );
+
+        System.out.println(
+            AccessChecker.classifyAccess("protected", "DIFFERENT_PACKAGE")
+        );
+
+        String[][] attempts = {
+            {"default", "SAME_PACKAGE"},
+            {"default", "DIFFERENT_PACKAGE"},
+            {"public", "DIFFERENT_PACKAGE"}
         };
 
-        String[] isbns = {
-            "978-0132350884",
-            "",
-            "9780451524935",
-            ""
-        };
-
-        for (int i = 0; i < titles.length; i++) {
-
-            LibraryBook book;
-
-            if (isbns[i].equals("")) {
-                book = new LibraryBook(titles[i]);
-            } else {
-                book = new LibraryBook(titles[i], isbns[i]);
-            }
-
-            book.printStatus();
-        }
+        System.out.println(
+            AccessChecker.summarizeBatch(attempts)
+        );
     }
 }

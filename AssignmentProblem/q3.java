@@ -1,66 +1,48 @@
-class ParkingTicket {
+class BookInventory {
 
-    String vehicleNo;
-    double ratePerMinute;
+    private int copiesTotal;
+    private int copiesAvailable;
 
-    ParkingTicket(String vehicleNo, double ratePerMinute) {
-        this.vehicleNo = vehicleNo;
-        this.ratePerMinute = ratePerMinute;
+    public BookInventory(int copiesTotal) {
+        this.copiesTotal = copiesTotal;
+        this.copiesAvailable = copiesTotal;
     }
 
-    final double calculateFine(int overstayMinutes) {
-        return overstayMinutes * ratePerMinute;
+    public void checkOut() {
+        if (copiesAvailable > 0) {
+            copiesAvailable--;
+        }
     }
 
-    final void printReceipt(int overstayMinutes) {
+    public void checkIn() {
+        if (copiesAvailable < copiesTotal) {
+            copiesAvailable++;
+        }
+    }
 
-        double fine = calculateFine(overstayMinutes);
-
-        System.out.println(
-            vehicleNo + " - Fine: Rs " + fine
-        );
+    public int getCopiesAvailable() {
+        return copiesAvailable;
     }
 }
 
 public class q3 {
+
     public static void main(String[] args) {
 
-        String[] vehicleNos = {
-            "TN09AB1234",
-            "TN22CD5678",
-            "TN09EF9012",
-            "TN10GH3456"
-        };
+        BookInventory b = new BookInventory(3);
 
-        double[] rates = {
-            2, 2, 3, 2
-        };
+        b.checkOut();
+        b.checkOut();
+        b.checkOut();
+        b.checkOut();
 
-        int[] overstayMinutes = {
-            15, 0, -5, 8
-        };
+        System.out.println(b.getCopiesAvailable());
 
-        for (int i = 0; i < vehicleNos.length; i++) {
+        b.checkIn();
+        b.checkIn();
+        b.checkIn();
+        b.checkIn();
 
-            ParkingTicket ticket =
-                new ParkingTicket(
-                    vehicleNos[i],
-                    rates[i]
-                );
-
-            if (overstayMinutes[i] > 0) {
-
-                ticket.printReceipt(
-                    overstayMinutes[i]
-                );
-
-            } else {
-
-                System.out.println(
-                    vehicleNos[i] +
-                    " - No fine, within allotted time"
-                );
-            }
-        }
+        System.out.println(b.getCopiesAvailable());
     }
 }

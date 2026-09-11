@@ -1,37 +1,78 @@
-class Item {
-
-    String itemName;
-    int stock;
-
-    Item(String itemName, int stock) {
-        this.itemName = itemName;
-        this.stock = stock;
-    }
-
-    void restock(int stock) {
-        this.stock = this.stock + stock;
-    }
+class LibraryMember {
+    private String membershipPin;
+    String branchCode;
+    protected double finesOwed;
+    public String displayName;
 }
 
 public class q2 {
+
+    static String classifyAccess(String fieldModifier, String accessorContext) {
+
+        if (fieldModifier.equals("public")) {
+            return "ALLOWED";
+        }
+
+        if (fieldModifier.equals("private")) {
+            if (accessorContext.equals("SAME_CLASS")) {
+                return "ALLOWED";
+            }
+            return "DENIED";
+        }
+
+        if (fieldModifier.equals("default")) {
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE")) {
+                return "ALLOWED";
+            }
+            return "DENIED";
+        }
+
+        if (fieldModifier.equals("protected")) {
+
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE") ||
+                accessorContext.equals("SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE")) {
+                return "ALLOWED";
+            }
+
+            return "DENIED";
+        }
+
+        return "DENIED";
+    }
+
+    static String firstDeniedAttempt(String[][] attempts) {
+
+        for (int i = 0; i < attempts.length; i++) {
+
+            String modifier = attempts[i][0];
+            String context = attempts[i][1];
+
+            if (classifyAccess(modifier, context).equals("DENIED")) {
+                return modifier + " via " + context +
+                       " (attempt #" + (i + 1) + ")";
+            }
+        }
+
+        return "None Denied";
+    }
+
     public static void main(String[] args) {
 
-        Item[] items = {
-            new Item("Samosa", 15),
-            new Item("Tea Powder", 40),
-            new Item("Bread", 8),
-            new Item("Biscuit Packs", 25)
+        String[][] attempts = {
+            {"public", "SUBCLASS_DIFFERENT_PACKAGE_PARENT_TYPE"},
+            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_PARENT_TYPE"},
+            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"}
         };
 
-        for (Item item : items) {
+        System.out.println(firstDeniedAttempt(attempts));
 
-            item.restock(20);
+        String[][] attempts2 = {
+            {"public", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"},
+            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"}
+        };
 
-            System.out.println(
-                item.itemName +
-                " | Final Stock: " +
-                item.stock
-            );
-        }
+        System.out.println(firstDeniedAttempt(attempts2));
     }
 }

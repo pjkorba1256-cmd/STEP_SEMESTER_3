@@ -1,40 +1,49 @@
-class Employee {
+class AccessChecker {
 
-    String empId;
-    double salary;
+    static String classifyAccess(String fieldModifier, String accessorContext) {
+        if (fieldModifier.equals("private")) {
+            if (accessorContext.equals("SAME_CLASS")) {
+                return "ALLOWED";
+            }
+            return "DENIED";
+        }
+        if (fieldModifier.equals("default")) {
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE")) {
+                return "ALLOWED";
+            }
+            return "DENIED";
+        }
+        if (fieldModifier.equals("protected")) {
+            if (accessorContext.equals("SAME_CLASS") ||
+                accessorContext.equals("SAME_PACKAGE") ||
+                accessorContext.equals("SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE")) {
+                return "ALLOWED";
+            }
+            return "DENIED";
+        }
+        if (fieldModifier.equals("public")) {
+            return "ALLOWED";
+        }
 
-    Employee(String empId, double salary) {
-        this.empId = empId;
-        this.salary = salary;
-    }
-
-    void raiseSalary(double salary) {
-        this.salary = this.salary + salary;
+        return "DENIED";
     }
 }
-
-public class q2 {
+class q2 {
     public static void main(String[] args) {
 
-        Employee[] employees = {
-            new Employee("E-101", 40000),
-            new Employee("E-102", 55000),
-            new Employee("E-103", 62000),
-            new Employee("E-104", 48000)
-        };
+        System.out.println(
+            AccessChecker.classifyAccess(
+                "protected",
+                "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"
+            )
+        );
 
-        double bonus = 5000;
-
-        for (Employee employee : employees) {
-            employee.raiseSalary(bonus);
-        }
-
-        for (Employee employee : employees) {
-            System.out.println(
-                employee.empId +
-                " | Final Salary: Rs " +
-                employee.salary
-            );
-        }
+        System.out.println(
+            AccessChecker.classifyAccess(
+                    "protected",
+                "SUBCLASS_DIFFERENT_PACKAGE_PARENT_TYPE"
+            )
+        );
     }
 }
