@@ -1,63 +1,151 @@
-class q5 {
-    private final String bookingId;
-    private final String[] seatNumbers;
+class LibraryMember {
 
-    public q5(String id, String[] seats) {
-        bookingId = id;
-        seatNumbers = seats.clone();
-    }
+    protected int borrowLimit;
+    protected int booksBorrowed;
 
-    public String[] getSeatNumbers() {
-        return seatNumbers.clone();
-    }
+    private static int membersEnrolled = 0;
 
-    public q5 withUpdatedSeat(int index, String seat) {
-        String[] seats = seatNumbers.clone();
-        seats[index] = seat;
-        return new q5(bookingId, seats);
-    }
+    public final String memberNumber;
 
-    public static String processNightlySettlement(q5[] r) {
-        int processed = 0, skipped = 0, group = 0, individual = 0;
+    public LibraryMember(int borrowLimit) {
 
-        for (q5 b : r) {
-            if (b == null)
-                skipped++;
-            else {
-                processed++;
-                if (b instanceof GroupBookingReceipt)
-                    group++;
-                else
-                    individual++;
-            }
+        if (borrowLimit <= 0) {
+            throw new IllegalArgumentException("Invalid borrow limit");
         }
 
-        return processed + " processed | " + skipped + " null skipped | "
-                + group + " group | " + individual + " individual";
+        membersEnrolled++;
+
+        memberNumber = "LIB-" + (100 + membersEnrolled);
+
+        this.borrowLimit = borrowLimit;
+        this.booksBorrowed = 0;
     }
 
-    public static void main(String[] args) {
-        q5 b = new q5("CH-1001", new String[]{"A1", "A2"});
+    public void borrowBook() {
+        if (booksBorrowed < borrowLimit) {
+            booksBorrowed++;
+        }
+    }
 
-        System.out.println(b.getSeatNumbers()[0]);
+    public void borrowBook(String genre) {
+        System.out.println("Genre: " + genre);
+        borrowBook();
+    }
 
-        q5 updated = b.withUpdatedSeat(1, "A3");
+    public int getBooksBorrowed() {
+        return booksBorrowed;
+    }
 
-        System.out.println(updated.getSeatNumbers()[0]);
-        System.out.println(updated.getSeatNumbers()[1]);
+    public static boolean isValidRenewalCode(String code) {
 
-        q5[] r = {
-            new GroupBookingReceipt("CH-2002", new String[]{"B1", "B2"}, 2),
-            null,
-            new q5("CH-3003", new String[]{"C1"})
-        };
+        if (code == null || code.length() != 4) {
+            return false;
+        }
 
-        System.out.println(q5.processNightlySettlement(r));
+        if (code.charAt(0) != 'R') {
+            return false;
+        }
+
+        if (!Character.isDigit(code.charAt(1))) {
+            return false;
+        }
+
+        if (!Character.isDigit(code.charAt(2))) {
+            return false;
+        }
+
+        if (!Character.isUpperCase(code.charAt(3))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static int getMembersEnrolled() {
+        return membersEnrolled;
     }
 }
 
-class GroupBookingReceipt extends q5 {
-    public GroupBookingReceipt(String id, String[] seats, int size) {
-        super(id, seats);
+class FacultyMember extends LibraryMember {
+
+    private String department;
+
+    public FacultyMember(int borrowLimit, String department) {
+        super(borrowLimit);
+        this.department = department;
+    }
+}
+
+public class q5 {
+
+    public static String processNightlyAudit(
+            LibraryMember[] members) {
+
+        int processed = 0;
+        int nullSkipped = 0;
+        int faculty = 0;
+        int regular = 0;
+
+        for (LibraryMember member : members) {
+
+            if (member == null) {
+                nullSkipped++;
+                continue;
+            }
+
+            processed++;
+
+            if (member instanceof FacultyMember) {
+                faculty++;
+            } else {
+                regular++;
+            }
+        }
+
+        return processed + " processed | " +
+               nullSkipped + " null skipped | " +
+               faculty + " faculty | " +
+               regular + " regular";
+    }
+
+    public static void main(String[] args) {
+
+        LibraryMember m1 =
+            new LibraryMember(3);
+
+        System.out.println(m1.memberNumber);
+
+        System.out.println(
+            LibraryMember.getMembersEnrolled()
+        );
+
+        System.out.println(
+            LibraryMember.isValidRenewalCode("R12A")
+        );
+
+        System.out.println(
+            LibraryMember.isValidRenewalCode("R1A")
+        );
+
+        System.out.println(
+            LibraryMember.isValidRenewalCode("X12A")
+        );
+
+        m1.borrowBook();
+        m1.borrowBook("Fiction");
+
+        System.out.println(
+            m1.getBooksBorrowed()
+        );
+
+        LibraryMember[] members = {
+            new FacultyMember(5, "Physics"),
+            null,
+            new LibraryMember(3)
+        };
+
+        System.out.println(
+            processNightlyAudit(members)
+        );
     }
 }

@@ -1,45 +1,78 @@
-class CineScreen {
+import java.util.Arrays;
 
-    private int seatsTotal;
-    private int seatsAvailable;
+class LibraryMember {
+    protected String memberId;
+    protected int borrowLimit;
+    protected int booksBorrowed;
 
-    CineScreen(int seatsTotal) {
-        if (seatsTotal <= 0)
-            throw new IllegalArgumentException("construction rejected");
+    private int[] fineHistory = new int[10];
+    private int fineCount = 0;
 
-        this.seatsTotal = seatsTotal;
-        this.seatsAvailable = seatsTotal;
+    public LibraryMember(String memberId, int borrowLimit) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
+        }
+
+        if (borrowLimit <= 0) {
+            throw new IllegalArgumentException("Invalid borrow limit");
+        }
+
+        this.memberId = memberId;
+        this.borrowLimit = borrowLimit;
     }
 
-    void bookSeat() {
-        if (seatsAvailable > 0)
-            seatsAvailable--;
+    protected void chargeFine(int amount) {
+        if (fineCount < fineHistory.length) {
+            fineHistory[fineCount] = amount;
+            fineCount++;
+        }
     }
 
-    void cancelBooking() {
-        if (seatsAvailable < seatsTotal)
-            seatsAvailable++;
+    public int[] getFineHistory() {
+        return Arrays.copyOf(fineHistory, fineCount);
     }
 
-    int getSeatsAvailable() {
-        return seatsAvailable;
+    public int getTotalFine() {
+        int total = 0;
+
+        for (int i = 0; i < fineCount; i++) {
+            total += fineHistory[i];
+        }
+
+        return total;
     }
 }
+
+class StudentMember extends LibraryMember {
+    private String course;
+
+    public StudentMember(String memberId, int borrowLimit, String course) {
+        super(memberId, borrowLimit);
+        this.course = course;
+    }
+
+    @Override
+    protected void chargeFine(int amount) {
+        super.chargeFine(amount / 2);
+    }
+}
+
 public class q3 {
     public static void main(String[] args) {
 
-        CineScreen c = new CineScreen(2);
+        StudentMember s =
+            new StudentMember("STU5", 3, "CSE");
 
-        c.bookSeat();
-        c.bookSeat();
-        c.bookSeat();
+        s.chargeFine(100);
 
-        System.out.println(c.getSeatsAvailable()); 
+        System.out.println(s.getTotalFine());
 
-        c.cancelBooking();
-        c.cancelBooking();
-        c.cancelBooking();
+        int[] history = s.getFineHistory();
 
-        System.out.println(c.getSeatsAvailable()); 
+        history[0] = 999;
+
+        System.out.println(
+            Arrays.toString(s.getFineHistory())
+        );
     }
 }

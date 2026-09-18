@@ -1,119 +1,150 @@
-import java.util.Arrays;
+class GymMember {
 
-class LoanReceipt {
+    protected int monthlyFee;
+    private int feesPaid;
 
-    private final String memberId;
-    private final String[] bookIds;
+    private static int membersEnrolled = 0;
 
-    public LoanReceipt(String memberId, String[] bookIds) {
-        this.memberId = memberId;
-        this.bookIds = Arrays.copyOf(bookIds, bookIds.length);
-    }
+    public final String membershipNumber;
 
-    public String[] getBookIds() {
-        return Arrays.copyOf(bookIds, bookIds.length);
-    }
+    public GymMember(int monthlyFee) {
 
-    public LoanReceipt withCorrectedBookId(int index, String newId) {
-
-        String[] newBookIds = Arrays.copyOf(bookIds, bookIds.length);
-
-        if (index >= 0 && index < newBookIds.length) {
-            newBookIds[index] = newId;
+        if (monthlyFee <= 0) {
+            throw new IllegalArgumentException("Invalid monthly fee");
         }
 
-        return new LoanReceipt(memberId, newBookIds);
+        membersEnrolled++;
+
+        membershipNumber = "GYM-" + (2000 + membersEnrolled);
+
+        this.monthlyFee = monthlyFee;
+        this.feesPaid = 0;
+    }
+
+    public void payFee(int amount) {
+        if (amount > 0) {
+            feesPaid += amount;
+        }
+    }
+
+    public void payFee(int amount, String mode) {
+        payFee(amount);
+    }
+
+    public int getFeesPaid() {
+        return feesPaid;
+    }
+
+    public static boolean isValidReferralCode(String code) {
+
+        if (code == null || code.length() != 4) {
+            return false;
+        }
+
+        if (code.charAt(0) != 'G') {
+            return false;
+        }
+
+        if (!Character.isDigit(code.charAt(1))) {
+            return false;
+        }
+
+        if (!Character.isDigit(code.charAt(2))) {
+            return false;
+        }
+
+        if (!Character.isUpperCase(code.charAt(3))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static int getMembersEnrolled() {
+        return membersEnrolled;
     }
 }
 
-class ReferenceOnlyLoanReceipt extends LoanReceipt {
+class GroupClassMember extends GymMember {
 
-    private final String roomNumber;
+    private String className;
 
-    public ReferenceOnlyLoanReceipt(
-            String memberId,
-            String[] bookIds,
-            String roomNumber) {
-
-        super(memberId, bookIds);
-        this.roomNumber = roomNumber;
+    public GroupClassMember(int monthlyFee, String className) {
+        super(monthlyFee);
+        this.className = className;
     }
 }
 
-class CirculationLedger {
+public class q5 {
 
-    private static String branchCode;
-
-    static {
-        branchCode = "BRANCH-001";
-    }
-
-    static String processNightlyCirculation(LoanReceipt[] receipts) {
+    public static String processWeeklyCheckIn(
+            GymMember[] members) {
 
         int processed = 0;
         int nullSkipped = 0;
-        int referenceOnly = 0;
-        int regular = 0;
+        int group = 0;
+        int individual = 0;
 
-        for (LoanReceipt receipt : receipts) {
+        for (GymMember member : members) {
 
-            if (receipt == null) {
+            if (member == null) {
                 nullSkipped++;
                 continue;
             }
 
             processed++;
 
-            if (receipt instanceof ReferenceOnlyLoanReceipt) {
-                referenceOnly++;
+            if (member instanceof GroupClassMember) {
+                group++;
             } else {
-                regular++;
+                individual++;
             }
         }
 
-        return processed + " processed | "
-                + nullSkipped + " null skipped | "
-                + referenceOnly + " reference-only | "
-                + regular + " regular";
+        return processed + " processed | " +
+               nullSkipped + " null skipped | " +
+               group + " group | " +
+               individual + " individual";
     }
-}
-
-public class q5 {
 
     public static void main(String[] args) {
 
-        LoanReceipt r = new LoanReceipt(
-                "LIB-8841",
-                new String[]{"BK-100", "BK-101"}
+        GymMember m1 =
+            new GymMember(1000);
+
+        System.out.println(m1.membershipNumber);
+
+        System.out.println(
+            GymMember.getMembersEnrolled()
         );
 
-        String[] ids = r.getBookIds();
+        System.out.println(
+            GymMember.isValidReferralCode("G45B")
+        );
 
-        ids[0] = "HACKED";
+        System.out.println(
+            GymMember.isValidReferralCode("G4B")
+        );
 
-        System.out.println(r.getBookIds()[0]);
+        System.out.println(
+            GymMember.isValidReferralCode("X45B")
+        );
 
-        LoanReceipt corrected =
-                r.withCorrectedBookId(1, "BK-102");
+        m1.payFee(500);
+        m1.payFee(500, "UPI");
 
-        System.out.println(Arrays.toString(r.getBookIds()));
-        System.out.println(Arrays.toString(corrected.getBookIds()));
+        System.out.println(
+            m1.getFeesPaid()
+        );
 
-        LoanReceipt[] receipts = {
-            new ReferenceOnlyLoanReceipt(
-                "LIB-001",
-                new String[]{"BK-200"},
-                "Reading Room 3"
-            ),
+        GymMember[] members = {
+            new GroupClassMember(1500, "Zumba"),
             null,
-            new LoanReceipt(
-                "LIB-002",
-                new String[]{"BK-201"}
-            )
+            new GymMember(1000)
         };
 
         System.out.println(
-            CirculationLedger.processNightlyCirculation(receipts)
+            processWeeklyCheckIn(members)
         );
     }
 }

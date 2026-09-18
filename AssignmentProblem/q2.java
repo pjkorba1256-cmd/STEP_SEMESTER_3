@@ -1,78 +1,150 @@
-class LibraryMember {
-    private String membershipPin;
-    String branchCode;
-    protected double finesOwed;
-    public String displayName;
+class GymMember {
+    protected String memberId;
+    protected int monthlyFee;
+    protected int sessionsAttended;
+
+    public GymMember(String memberId, int monthlyFee) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
+        }
+
+        if (monthlyFee <= 0) {
+            throw new IllegalArgumentException("Invalid monthly fee");
+        }
+
+        this.memberId = memberId;
+        this.monthlyFee = monthlyFee;
+        this.sessionsAttended = 0;
+    }
+
+    public void attendSession() {
+        sessionsAttended++;
+    }
+
+    public int getSessionsAttended() {
+        return sessionsAttended;
+    }
+
+    public String displayInfo() {
+        return "Standard Member | Sessions: " + sessionsAttended;
+    }
+}
+
+class PremiumMember extends GymMember {
+    protected String trainerName;
+
+    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
+        super(memberId, monthlyFee);
+        this.trainerName = trainerName;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Premium Member | Trainer: " + trainerName +
+               " | Sessions: " + sessionsAttended;
+    }
+}
+
+class EliteMember extends PremiumMember {
+    private String lockerNumber;
+
+    public EliteMember(String memberId, int monthlyFee,
+                       String trainerName, String lockerNumber) {
+        super(memberId, monthlyFee, trainerName);
+        this.lockerNumber = lockerNumber;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Elite Member | Trainer: " + trainerName +
+               " | Locker: " + lockerNumber +
+               " | Sessions: " + sessionsAttended;
+    }
+}
+
+class GroupClassMember extends GymMember {
+    private String className;
+
+    public GroupClassMember(String memberId, int monthlyFee, String className) {
+        super(memberId, monthlyFee);
+        this.className = className;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Group Class Member | Class: " + className +
+               " | Sessions: " + sessionsAttended;
+    }
 }
 
 public class q2 {
 
-    static String classifyAccess(String fieldModifier, String accessorContext) {
-
-        if (fieldModifier.equals("public")) {
-            return "ALLOWED";
+    public static String classifyGeneration(GymMember member) {
+        if (member instanceof EliteMember) {
+            return "Multilevel descendant (3 generations deep)";
         }
 
-        if (fieldModifier.equals("private")) {
-            if (accessorContext.equals("SAME_CLASS")) {
-                return "ALLOWED";
-            }
-            return "DENIED";
+        if (member instanceof GroupClassMember) {
+            return "Hierarchical sibling (independent branch)";
         }
 
-        if (fieldModifier.equals("default")) {
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE")) {
-                return "ALLOWED";
-            }
-            return "DENIED";
+        if (member instanceof PremiumMember) {
+            return "Premium branch";
         }
 
-        if (fieldModifier.equals("protected")) {
-
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE") ||
-                accessorContext.equals("SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE")) {
-                return "ALLOWED";
-            }
-
-            return "DENIED";
-        }
-
-        return "DENIED";
+        return "Standard Member";
     }
 
-    static String firstDeniedAttempt(String[][] attempts) {
+    public static int getTotalSessionsAttended(GymMember[] members) {
+        int total = 0;
 
-        for (int i = 0; i < attempts.length; i++) {
-
-            String modifier = attempts[i][0];
-            String context = attempts[i][1];
-
-            if (classifyAccess(modifier, context).equals("DENIED")) {
-                return modifier + " via " + context +
-                       " (attempt #" + (i + 1) + ")";
-            }
+        for (GymMember member : members) {
+            total += member.getSessionsAttended();
         }
 
-        return "None Denied";
+        return total;
     }
 
     public static void main(String[] args) {
 
-        String[][] attempts = {
-            {"public", "SUBCLASS_DIFFERENT_PACKAGE_PARENT_TYPE"},
-            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_PARENT_TYPE"},
-            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"}
+        GymMember member =
+            new GymMember("MEM1", 1000);
+
+        PremiumMember premium =
+            new PremiumMember("MEM2", 2000, "Coach Riya");
+
+        EliteMember elite =
+            new EliteMember("MEM3", 3000, "Coach Arjun", "L12");
+
+        GroupClassMember group =
+            new GroupClassMember("MEM4", 1500, "Zumba");
+
+        System.out.println(member.displayInfo());
+        System.out.println(premium.displayInfo());
+        System.out.println(elite.displayInfo());
+        System.out.println(group.displayInfo());
+
+        System.out.println(classifyGeneration(elite));
+        System.out.println(classifyGeneration(group));
+
+        premium.attendSession();
+        premium.attendSession();
+        premium.attendSession();
+
+        elite.attendSession();
+        elite.attendSession();
+
+        group.attendSession();
+        group.attendSession();
+        group.attendSession();
+        group.attendSession();
+
+        GymMember[] members = {
+            premium, elite, group
         };
 
-        System.out.println(firstDeniedAttempt(attempts));
-
-        String[][] attempts2 = {
-            {"public", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"},
-            {"protected", "SUBCLASS_DIFFERENT_PACKAGE_OWN_TYPE"}
-        };
-
-        System.out.println(firstDeniedAttempt(attempts2));
+        System.out.println(
+            getTotalSessionsAttended(members)
+        );
     }
 }

@@ -1,48 +1,77 @@
-class BookInventory {
+import java.util.Arrays;
 
-    private int copiesTotal;
-    private int copiesAvailable;
+class GymMember {
+    protected String memberId;
+    protected int monthlyFee;
 
-    public BookInventory(int copiesTotal) {
-        this.copiesTotal = copiesTotal;
-        this.copiesAvailable = copiesTotal;
+    private int[] lateFeeHistory = new int[10];
+    private int feeCount = 0;
+
+    public GymMember(String memberId, int monthlyFee) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
+        }
+
+        if (monthlyFee <= 0) {
+            throw new IllegalArgumentException("Invalid monthly fee");
+        }
+
+        this.memberId = memberId;
+        this.monthlyFee = monthlyFee;
     }
 
-    public void checkOut() {
-        if (copiesAvailable > 0) {
-            copiesAvailable--;
+    protected void chargeLateFee(int amount) {
+        if (feeCount < 10) {
+            lateFeeHistory[feeCount] = amount;
+            feeCount++;
         }
     }
 
-    public void checkIn() {
-        if (copiesAvailable < copiesTotal) {
-            copiesAvailable++;
-        }
+    public int[] getLateFeeHistory() {
+        return Arrays.copyOf(lateFeeHistory, feeCount);
     }
 
-    public int getCopiesAvailable() {
-        return copiesAvailable;
+    public int getTotalLateFees() {
+        int total = 0;
+
+        for (int i = 0; i < feeCount; i++) {
+            total += lateFeeHistory[i];
+        }
+
+        return total;
+    }
+}
+
+class PremiumMember extends GymMember {
+    private String trainerName;
+
+    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
+        super(memberId, monthlyFee);
+        this.trainerName = trainerName;
+    }
+
+    @Override
+    protected void chargeLateFee(int amount) {
+        super.chargeLateFee(amount / 2);
     }
 }
 
 public class q3 {
-
     public static void main(String[] args) {
 
-        BookInventory b = new BookInventory(3);
+        PremiumMember p =
+            new PremiumMember("MEM5", 2000, "Coach Riya");
 
-        b.checkOut();
-        b.checkOut();
-        b.checkOut();
-        b.checkOut();
+        p.chargeLateFee(200);
 
-        System.out.println(b.getCopiesAvailable());
+        System.out.println(p.getTotalLateFees());
 
-        b.checkIn();
-        b.checkIn();
-        b.checkIn();
-        b.checkIn();
+        int[] history = p.getLateFeeHistory();
 
-        System.out.println(b.getCopiesAvailable());
+        history[0] = 999;
+
+        System.out.println(
+            Arrays.toString(p.getLateFeeHistory())
+        );
     }
 }

@@ -1,106 +1,85 @@
-class LibraryMember {
-    private String membershipPin;
-    String branchCode;
-    protected double finesOwed;
-    public String displayName;
+class GymMember {
+    protected String memberId;
+    protected int monthlyFee;
+    protected int sessionsAttended;
+
+    public GymMember(String memberId, int monthlyFee) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
+        }
+
+        if (monthlyFee <= 0) {
+            throw new IllegalArgumentException("Invalid monthly fee");
+        }
+
+        this.memberId = memberId;
+        this.monthlyFee = monthlyFee;
+        this.sessionsAttended = 0;
+    }
+
+    public void attendSession() {
+        sessionsAttended++;
+    }
+
+    public int getSessionsAttended() {
+        return sessionsAttended;
+    }
+
+    public String displayInfo() {
+        return "Standard Member | Sessions: " + sessionsAttended;
+    }
+
+    public static String signUpBatch(String[] memberIds, int monthlyFee) {
+        int signedUp = 0;
+        int rejected = 0;
+
+        for (String id : memberIds) {
+            try {
+                new GymMember(id, monthlyFee);
+                signedUp++;
+            } catch (IllegalArgumentException e) {
+                rejected++;
+            }
+        }
+
+        return "Signed Up: " + signedUp + " | Rejected: " + rejected;
+    }
+}
+
+class PremiumMember extends GymMember {
+    private String trainerName;
+
+    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
+        super(memberId, monthlyFee);
+        this.trainerName = trainerName;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Premium Member | Trainer: " + trainerName +
+               " | Sessions: " + sessionsAttended;
+    }
 }
 
 public class q1 {
-
-    static String classifyAccess(String fieldModifier, String accessorContext) {
-
-        if (fieldModifier.equals("public")) {
-            return "ALLOWED";
-        }
-
-        if (fieldModifier.equals("private")) {
-            if (accessorContext.equals("SAME_CLASS")) {
-                return "ALLOWED";
-            }
-            return "DENIED";
-        }
-
-        if (fieldModifier.equals("default")) {
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE")) {
-                return "ALLOWED";
-            }
-            return "DENIED";
-        }
-
-        if (fieldModifier.equals("protected")) {
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE")) {
-                return "ALLOWED";
-            }
-            return "DENIED";
-        }
-
-        return "DENIED";
-    }
-
-    static String summarizeByModifier(String[][] attempts) {
-
-        String[] modifiers = {"private", "default", "protected", "public"};
-        int[] allowed = new int[4];
-        int[] denied = new int[4];
-
-        for (String[] attempt : attempts) {
-
-            String modifier = attempt[0];
-            String context = attempt[1];
-
-            String result = classifyAccess(modifier, context);
-
-            for (int i = 0; i < modifiers.length; i++) {
-                if (modifier.equals(modifiers[i])) {
-                    if (result.equals("ALLOWED")) {
-                        allowed[i]++;
-                    } else {
-                        denied[i]++;
-                    }
-                }
-            }
-        }
-
-        String result = "";
-
-        for (int i = 0; i < modifiers.length; i++) {
-
-            if (i > 0) {
-                result += " | ";
-            }
-
-            result += modifiers[i] + ": "
-                    + allowed[i] + " allowed / "
-                    + denied[i] + " denied";
-        }
-
-        return result;
-    }
-
     public static void main(String[] args) {
 
-        String[][] attempts = {
-            {"private", "SAME_CLASS"},
-            {"private", "SAME_PACKAGE"},
-            {"default", "SAME_PACKAGE"},
-            {"default", "DIFFERENT_PACKAGE"},
-            {"protected", "SAME_PACKAGE"},
-            {"protected", "SAME_CLASS"},
-            {"public", "DIFFERENT_PACKAGE"}
-        };
+        PremiumMember p =
+            new PremiumMember("MEM01", 2000, "Coach Riya");
+
+        p.attendSession();
+        p.attendSession();
+
+        System.out.println(p.getSessionsAttended());
+
+        String[] ids = {"MEM1", "GM1", "MEM2", " ", "MEM3"};
 
         System.out.println(
-            classifyAccess("private", "SAME_CLASS")
-        );
-
-        System.out.println(
-            classifyAccess("protected", "DIFFERENT_PACKAGE")
-        );
-
-        System.out.println(
-            summarizeByModifier(attempts)
+            GymMember.signUpBatch(ids, 1000)
         );
     }
 }

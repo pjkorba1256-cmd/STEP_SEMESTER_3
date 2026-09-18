@@ -1,88 +1,86 @@
-class AccessChecker {
+class LibraryMember {
+    protected String memberId;
+    protected int borrowLimit;
+    protected int booksBorrowed;
 
-    static String classifyAccess(String fieldModifier, String accessorContext) {
-
-        if (fieldModifier.equals("private")) {
-            if (accessorContext.equals("SAME_CLASS")) {
-                return "ALLOWED";
-            } else {
-                return "DENIED";
-            }
+    public LibraryMember(String memberId, int borrowLimit) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
         }
 
-        if (fieldModifier.equals("default")) {
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE")) {
-                return "ALLOWED";
-            } else {
-                return "DENIED";
-            }
+        if (borrowLimit <= 0) {
+            throw new IllegalArgumentException("Invalid borrow limit");
         }
 
-        if (fieldModifier.equals("protected")) {
-            if (accessorContext.equals("SAME_CLASS") ||
-                accessorContext.equals("SAME_PACKAGE")) {
-                return "ALLOWED";
-            } else {
-                return "DENIED";
-            }
-        }
-
-        if (fieldModifier.equals("public")) {
-            return "ALLOWED";
-        }
-
-        return "DENIED";
+        this.memberId = memberId;
+        this.borrowLimit = borrowLimit;
+        this.booksBorrowed = 0;
     }
 
-    static String summarizeBatch(String[][] attempts) {
+    public void borrowBook() {
+        if (booksBorrowed < borrowLimit) {
+            booksBorrowed++;
+        }
+    }
 
-        int allowed = 0;
-        int denied = 0;
+    public int getBooksBorrowed() {
+        return booksBorrowed;
+    }
 
-        for (String[] attempt : attempts) {
-            String result = classifyAccess(attempt[0], attempt[1]);
+    public String displayInfo() {
+        return "General Member | Books Borrowed: " + booksBorrowed;
+    }
 
-            if (result.equals("ALLOWED")) {
-                allowed++;
-            } else {
-                denied++;
+    public static String enrollBatch(String[] memberIds, int borrowLimit) {
+        int enrolled = 0;
+        int rejected = 0;
+
+        for (String id : memberIds) {
+            try {
+                new LibraryMember(id, borrowLimit);
+                enrolled++;
+            } catch (IllegalArgumentException e) {
+                rejected++;
             }
         }
 
-        return "Allowed: " + allowed + " | Denied: " + denied;
+        return "Enrolled: " + enrolled + " | Rejected: " + rejected;
     }
 }
 
+class StudentMember extends LibraryMember {
+    private String course;
 
-class MovieTicket {
+    public StudentMember(String memberId, int borrowLimit, String course) {
+        super(memberId, borrowLimit);
+        this.course = course;
+    }
 
-    private int seatNumber;
-    String screenId;        
-    protected double ticketPrice;
-    public String movieTitle;
+    public String getCourse() {
+        return course;
+    }
 
+    @Override
+    public String displayInfo() {
+        return "Student Member | Course: " + course +
+               " | Books Borrowed: " + booksBorrowed;
+    }
 }
-class q1 {
 
+public class q1 {
     public static void main(String[] args) {
 
-        System.out.println(
-            AccessChecker.classifyAccess("private", "SAME_CLASS")
-        );
+        StudentMember s = new StudentMember("STU10", 3, "CSE");
+
+        s.borrowBook();
+        s.borrowBook();
+
+        System.out.println(s.getBooksBorrowed());
+
+        String[] ids = {"STU1", "LB1", "STU2", " ", "STU3"};
 
         System.out.println(
-            AccessChecker.classifyAccess("protected", "DIFFERENT_PACKAGE")
-        );
-
-        String[][] attempts = {
-            {"default", "SAME_PACKAGE"},
-            {"default", "DIFFERENT_PACKAGE"},
-            {"public", "DIFFERENT_PACKAGE"}
-        };
-
-        System.out.println(
-            AccessChecker.summarizeBatch(attempts)
+            LibraryMember.enrollBatch(ids, 3)
         );
     }
 }

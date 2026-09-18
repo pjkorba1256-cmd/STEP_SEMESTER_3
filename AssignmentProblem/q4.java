@@ -1,83 +1,86 @@
-import java.security.MessageDigest;
+class GymMember {
+    protected String memberId;
+    protected int monthlyFee;
+    protected int sessionsAttended;
 
-class LibraryMember {
-
-    private String membershipId;
-    private String name;
-    private boolean premiumMember;
-    private String securityAnswer;
-
-    private boolean membershipIdSet = false;
-
-    public LibraryMember() {
-    }
-
-    public String getMembershipId() {
-        return membershipId;
-    }
-
-    public void setMembershipId(String id) {
-        if (!membershipIdSet) {
-            membershipId = id;
-            membershipIdSet = true;
+    public GymMember(String memberId, int monthlyFee) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
         }
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isPremiumMember() {
-        return premiumMember;
-    }
-
-    public void setPremiumMember(boolean premium) {
-        this.premiumMember = premium;
-    }
-
-    public void setSecurityAnswer(String answer) {
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            byte[] hash = md.digest(answer.getBytes());
-
-            StringBuilder result = new StringBuilder();
-
-            for (byte b : hash) {
-                result.append(String.format("%02x", b));
-            }
-
-            securityAnswer = result.toString();
-
-        } catch (Exception e) {
-            securityAnswer = "";
+        if (monthlyFee <= 0) {
+            throw new IllegalArgumentException("Invalid monthly fee");
         }
+
+        this.memberId = memberId;
+        this.monthlyFee = monthlyFee;
+    }
+
+    public void attendSession() {
+        sessionsAttended++;
+    }
+
+    public String displayInfo() {
+        return "Standard | Sessions: " + sessionsAttended;
+    }
+}
+
+class PremiumMember extends GymMember {
+    private String trainerName;
+
+    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
+        super(memberId, monthlyFee);
+        this.trainerName = trainerName;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Premium | Trainer: " + trainerName +
+               " | Sessions: " + sessionsAttended;
     }
 }
 
 public class q4 {
 
+    public static String batchPrint(GymMember[] members) {
+
+        StringBuilder result = new StringBuilder();
+
+        for (GymMember member : members) {
+
+            result.append(member.displayInfo());
+
+            if (member instanceof PremiumMember) {
+                PremiumMember premium =
+                    (PremiumMember) member;
+
+                result.append(" [Trainer via downcast: ")
+                      .append(premium.getTrainerName())
+                      .append("]");
+            }
+
+            result.append(" | ");
+        }
+
+        return result.toString();
+    }
+
     public static void main(String[] args) {
 
-        LibraryMember m = new LibraryMember();
+        GymMember standard =
+            new GymMember("MEM6", 1000);
 
-        m.setMembershipId("LIB-8841");
-        m.setName("Priya Nair");
-        m.setPremiumMember(true);
+        PremiumMember premium =
+            new PremiumMember("MEM7", 2000, "Coach Riya");
 
-        System.out.println(m.getMembershipId());
+        GymMember[] members = {
+            standard, premium
+        };
 
-        m.setMembershipId("FAKE-0000");
-
-        System.out.println(m.getMembershipId());
-
-        System.out.println(m.isPremiumMember());
-
-        m.setSecurityAnswer("BlueMountain");
+        System.out.println(batchPrint(members));
     }
 }

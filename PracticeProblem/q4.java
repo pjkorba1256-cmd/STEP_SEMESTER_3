@@ -1,46 +1,92 @@
-class MovieBookingProfile {
+class LibraryMember {
+    protected String memberId;
+    protected int borrowLimit;
+    protected int booksBorrowed;
 
-    private String name;
-    private boolean confirmed;
-    private String otp;
-    public MovieBookingProfile() {
-        name = "";
-        confirmed = false;
-    }
-    public MovieBookingProfile(String name) {
-        this();
-        this.name = name;
-    }
+    public LibraryMember(String memberId, int borrowLimit) {
+        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
+            throw new IllegalArgumentException("Invalid member ID");
+        }
 
-    public String getName() {
-        return name;
-    }
+        if (borrowLimit <= 0) {
+            throw new IllegalArgumentException("Invalid borrow limit");
+        }
 
-    public void setName(String name) {
-        this.name = name;
+        this.memberId = memberId;
+        this.borrowLimit = borrowLimit;
     }
 
-    public boolean isConfirmed() {
-        return confirmed;
+    public void borrowBook() {
+        if (booksBorrowed < borrowLimit) {
+            booksBorrowed++;
+        }
     }
 
-    public void setConfirmed(boolean confirmed) {
-        this.confirmed = confirmed;
+    public int getBooksBorrowed() {
+        return booksBorrowed;
     }
-    public void setOtp(String otp) {
-        this.otp = otp;
+
+    public String displayInfo() {
+        return "General | Books: " + booksBorrowed;
     }
-}class q4 {
+}
+
+class StudentMember extends LibraryMember {
+    private String course;
+
+    public StudentMember(String memberId, int borrowLimit, String course) {
+        super(memberId, borrowLimit);
+        this.course = course;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    @Override
+    public String displayInfo() {
+        return "Student | Course: " + course +
+               " | Books: " + booksBorrowed;
+    }
+}
+
+public class q4 {
+
+    public static String batchPrint(LibraryMember[] members) {
+
+        StringBuilder result = new StringBuilder();
+
+        for (LibraryMember member : members) {
+
+            result.append(member.displayInfo());
+
+            if (member instanceof StudentMember) {
+                StudentMember student =
+                    (StudentMember) member;
+
+                result.append(" [Course via downcast: ")
+                      .append(student.getCourse())
+                      .append("]");
+            }
+
+            result.append(" | ");
+        }
+
+        return result.toString();
+    }
+
     public static void main(String[] args) {
 
-        MovieBookingProfile p =
-            new MovieBookingProfile("Rahul Dev");
+        LibraryMember general =
+            new LibraryMember("LB5", 3);
 
-        System.out.println(p.getName());
+        StudentMember student =
+            new StudentMember("STU6", 3, "ECE");
 
-        p.setConfirmed(true);
-        System.out.println(p.isConfirmed());
-
-        p.setOtp("4471");
+        System.out.println(
+            batchPrint(new LibraryMember[] {
+                general, student
+            })
+        );
     }
 }
