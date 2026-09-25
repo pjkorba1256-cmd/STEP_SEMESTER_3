@@ -1,85 +1,47 @@
-class GymMember {
-    protected String memberId;
-    protected int monthlyFee;
-    protected int sessionsAttended;
+interface Ringable {
+    String ring();
+}
 
-    public GymMember(String memberId, int monthlyFee) {
-        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
-            throw new IllegalArgumentException("Invalid member ID");
-        }
+class AlarmClock implements Ringable {
+    private String time;
 
-        if (monthlyFee <= 0) {
-            throw new IllegalArgumentException("Invalid monthly fee");
-        }
-
-        this.memberId = memberId;
-        this.monthlyFee = monthlyFee;
-        this.sessionsAttended = 0;
+    public AlarmClock(String time) {
+        this.time = time;
     }
 
-    public void attendSession() {
-        sessionsAttended++;
-    }
-
-    public int getSessionsAttended() {
-        return sessionsAttended;
-    }
-
-    public String displayInfo() {
-        return "Standard Member | Sessions: " + sessionsAttended;
-    }
-
-    public static String signUpBatch(String[] memberIds, int monthlyFee) {
-        int signedUp = 0;
-        int rejected = 0;
-
-        for (String id : memberIds) {
-            try {
-                new GymMember(id, monthlyFee);
-                signedUp++;
-            } catch (IllegalArgumentException e) {
-                rejected++;
-            }
-        }
-
-        return "Signed Up: " + signedUp + " | Rejected: " + rejected;
+    public String ring() {
+        return "Alarm ringing for " + time;
     }
 }
 
-class PremiumMember extends GymMember {
-    private String trainerName;
+class Doorbell implements Ringable {
+    private String location;
 
-    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
-        super(memberId, monthlyFee);
-        this.trainerName = trainerName;
+    public Doorbell(String location) {
+        this.location = location;
     }
 
-    public String getTrainerName() {
-        return trainerName;
-    }
-
-    @Override
-    public String displayInfo() {
-        return "Premium Member | Trainer: " + trainerName +
-               " | Sessions: " + sessionsAttended;
+    public String ring() {
+        return "Doorbell ringing at " + location;
     }
 }
 
 public class q1 {
+
+    static void ringAll(Ringable[] devices) {
+        for (Ringable device : devices) {
+            System.out.println(device.ring());
+        }
+    }
+
     public static void main(String[] args) {
 
-        PremiumMember p =
-            new PremiumMember("MEM01", 2000, "Coach Riya");
+        AlarmClock a = new AlarmClock("7:00 AM");
+        Doorbell d = new Doorbell("Front Door");
 
-        p.attendSession();
-        p.attendSession();
+        System.out.println(a.ring());
+        System.out.println(d.ring());
 
-        System.out.println(p.getSessionsAttended());
-
-        String[] ids = {"MEM1", "GM1", "MEM2", " ", "MEM3"};
-
-        System.out.println(
-            GymMember.signUpBatch(ids, 1000)
-        );
+        ringAll(new Ringable[]{a, d});
     }
 }

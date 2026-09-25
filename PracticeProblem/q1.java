@@ -1,86 +1,52 @@
-class LibraryMember {
-    protected String memberId;
-    protected int borrowLimit;
-    protected int booksBorrowed;
+abstract class Toy {
+    private static int counter = 1000;
+    private final String toyId;
+    protected String name;
 
-    public LibraryMember(String memberId, int borrowLimit) {
-        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
-            throw new IllegalArgumentException("Invalid member ID");
-        }
-
-        if (borrowLimit <= 0) {
-            throw new IllegalArgumentException("Invalid borrow limit");
-        }
-
-        this.memberId = memberId;
-        this.borrowLimit = borrowLimit;
-        this.booksBorrowed = 0;
+    public Toy(String name) {
+        this.name = name;
+        counter++;
+        toyId = "TOY-" + counter;
     }
 
-    public void borrowBook() {
-        if (booksBorrowed < borrowLimit) {
-            booksBorrowed++;
-        }
-    }
+    public abstract String makeSound();
 
-    public int getBooksBorrowed() {
-        return booksBorrowed;
-    }
-
-    public String displayInfo() {
-        return "General Member | Books Borrowed: " + booksBorrowed;
-    }
-
-    public static String enrollBatch(String[] memberIds, int borrowLimit) {
-        int enrolled = 0;
-        int rejected = 0;
-
-        for (String id : memberIds) {
-            try {
-                new LibraryMember(id, borrowLimit);
-                enrolled++;
-            } catch (IllegalArgumentException e) {
-                rejected++;
-            }
-        }
-
-        return "Enrolled: " + enrolled + " | Rejected: " + rejected;
+    public String getToyId() {
+        return toyId;
     }
 }
 
-class StudentMember extends LibraryMember {
-    private String course;
-
-    public StudentMember(String memberId, int borrowLimit, String course) {
-        super(memberId, borrowLimit);
-        this.course = course;
-    }
-
-    public String getCourse() {
-        return course;
+class ToyCar extends Toy {
+    public ToyCar(String name) {
+        super(name);
     }
 
     @Override
-    public String displayInfo() {
-        return "Student Member | Course: " + course +
-               " | Books Borrowed: " + booksBorrowed;
+    public String makeSound() {
+        return name + ": Vroom vroom!";
+    }
+}
+
+class ToyRobot extends Toy {
+    public ToyRobot(String name) {
+        super(name);
+    }
+
+    @Override
+    public String makeSound() {
+        return name + ": Beep boop!";
     }
 }
 
 public class q1 {
     public static void main(String[] args) {
+        ToyCar c = new ToyCar("Speedster");
+        ToyRobot r = new ToyRobot("Bolt");
 
-        StudentMember s = new StudentMember("STU10", 3, "CSE");
+        System.out.println(c.makeSound());
+        System.out.println(r.makeSound());
 
-        s.borrowBook();
-        s.borrowBook();
-
-        System.out.println(s.getBooksBorrowed());
-
-        String[] ids = {"STU1", "LB1", "STU2", " ", "STU3"};
-
-        System.out.println(
-            LibraryMember.enrollBatch(ids, 3)
-        );
+        System.out.println(c.getToyId());
+        System.out.println(r.getToyId());
     }
 }

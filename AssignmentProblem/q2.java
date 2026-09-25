@@ -1,150 +1,54 @@
-class GymMember {
-    protected String memberId;
-    protected int monthlyFee;
-    protected int sessionsAttended;
+abstract class ArtPiece {
 
-    public GymMember(String memberId, int monthlyFee) {
-        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
-            throw new IllegalArgumentException("Invalid member ID");
-        }
+    private static int counter = 1;
+    private final String pieceId;
 
-        if (monthlyFee <= 0) {
-            throw new IllegalArgumentException("Invalid monthly fee");
-        }
-
-        this.memberId = memberId;
-        this.monthlyFee = monthlyFee;
-        this.sessionsAttended = 0;
+    public ArtPiece() {
+        pieceId = "ART-" + counter++;
     }
 
-    public void attendSession() {
-        sessionsAttended++;
-    }
+    public abstract String describe();
 
-    public int getSessionsAttended() {
-        return sessionsAttended;
-    }
-
-    public String displayInfo() {
-        return "Standard Member | Sessions: " + sessionsAttended;
+    public String getPieceId() {
+        return pieceId;
     }
 }
 
-class PremiumMember extends GymMember {
-    protected String trainerName;
+class Painting extends ArtPiece {
+    private String title;
 
-    public PremiumMember(String memberId, int monthlyFee, String trainerName) {
-        super(memberId, monthlyFee);
-        this.trainerName = trainerName;
+    public Painting(String title) {
+        this.title = title;
     }
 
-    @Override
-    public String displayInfo() {
-        return "Premium Member | Trainer: " + trainerName +
-               " | Sessions: " + sessionsAttended;
+    public String describe() {
+        return "Painting: " + title + ", framed on canvas";
     }
 }
 
-class EliteMember extends PremiumMember {
-    private String lockerNumber;
+class Sculpture extends ArtPiece {
+    private String title;
 
-    public EliteMember(String memberId, int monthlyFee,
-                       String trainerName, String lockerNumber) {
-        super(memberId, monthlyFee, trainerName);
-        this.lockerNumber = lockerNumber;
+    public Sculpture(String title) {
+        this.title = title;
     }
 
-    @Override
-    public String displayInfo() {
-        return "Elite Member | Trainer: " + trainerName +
-               " | Locker: " + lockerNumber +
-               " | Sessions: " + sessionsAttended;
-    }
-}
-
-class GroupClassMember extends GymMember {
-    private String className;
-
-    public GroupClassMember(String memberId, int monthlyFee, String className) {
-        super(memberId, monthlyFee);
-        this.className = className;
-    }
-
-    @Override
-    public String displayInfo() {
-        return "Group Class Member | Class: " + className +
-               " | Sessions: " + sessionsAttended;
+    public String describe() {
+        return "Sculpture: " + title + ", carved from stone";
     }
 }
 
 public class q2 {
 
-    public static String classifyGeneration(GymMember member) {
-        if (member instanceof EliteMember) {
-            return "Multilevel descendant (3 generations deep)";
-        }
-
-        if (member instanceof GroupClassMember) {
-            return "Hierarchical sibling (independent branch)";
-        }
-
-        if (member instanceof PremiumMember) {
-            return "Premium branch";
-        }
-
-        return "Standard Member";
-    }
-
-    public static int getTotalSessionsAttended(GymMember[] members) {
-        int total = 0;
-
-        for (GymMember member : members) {
-            total += member.getSessionsAttended();
-        }
-
-        return total;
-    }
-
     public static void main(String[] args) {
 
-        GymMember member =
-            new GymMember("MEM1", 1000);
+        Painting p = new Painting("Sunset Fields");
+        Sculpture s = new Sculpture("The Thinker II");
 
-        PremiumMember premium =
-            new PremiumMember("MEM2", 2000, "Coach Riya");
+        System.out.println(p.describe());
+        System.out.println(s.describe());
 
-        EliteMember elite =
-            new EliteMember("MEM3", 3000, "Coach Arjun", "L12");
-
-        GroupClassMember group =
-            new GroupClassMember("MEM4", 1500, "Zumba");
-
-        System.out.println(member.displayInfo());
-        System.out.println(premium.displayInfo());
-        System.out.println(elite.displayInfo());
-        System.out.println(group.displayInfo());
-
-        System.out.println(classifyGeneration(elite));
-        System.out.println(classifyGeneration(group));
-
-        premium.attendSession();
-        premium.attendSession();
-        premium.attendSession();
-
-        elite.attendSession();
-        elite.attendSession();
-
-        group.attendSession();
-        group.attendSession();
-        group.attendSession();
-        group.attendSession();
-
-        GymMember[] members = {
-            premium, elite, group
-        };
-
-        System.out.println(
-            getTotalSessionsAttended(members)
-        );
+        System.out.println(p.getPieceId());
+        System.out.println(s.getPieceId());
     }
 }

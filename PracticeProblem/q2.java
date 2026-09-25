@@ -1,149 +1,48 @@
-class LibraryMember {
-    protected String memberId;
-    protected int borrowLimit;
-    protected int booksBorrowed;
-
-    public LibraryMember(String memberId, int borrowLimit) {
-        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
-            throw new IllegalArgumentException("Invalid member ID");
-        }
-
-        if (borrowLimit <= 0) {
-            throw new IllegalArgumentException("Invalid borrow limit");
-        }
-
-        this.memberId = memberId;
-        this.borrowLimit = borrowLimit;
-        this.booksBorrowed = 0;
-    }
-
-    public void borrowBook() {
-        if (booksBorrowed < borrowLimit) {
-            booksBorrowed++;
-        }
-    }
-
-    public int getBooksBorrowed() {
-        return booksBorrowed;
-    }
-
-    public String displayInfo() {
-        return "General Member | Books Borrowed: " + booksBorrowed;
-    }
+interface Printable {
+    String printLabel();
 }
 
-class StudentMember extends LibraryMember {
-    protected String course;
+class PackageBox implements Printable {
+    private String trackingId;
 
-    public StudentMember(String memberId, int borrowLimit, String course) {
-        super(memberId, borrowLimit);
-        this.course = course;
+    public PackageBox(String trackingId) {
+        this.trackingId = trackingId;
     }
 
     @Override
-    public String displayInfo() {
-        return "Student Member | Course: " + course +
-               " | Books Borrowed: " + booksBorrowed;
+    public String printLabel() {
+        return "Package label: " + trackingId;
     }
 }
 
-class HonorsStudentMember extends StudentMember {
-    private int bonusLimit;
+class Invoice implements Printable {
+    private String invoiceNumber;
 
-    public HonorsStudentMember(String memberId, int borrowLimit,
-                               String course, int bonusLimit) {
-        super(memberId, borrowLimit, course);
-        this.bonusLimit = bonusLimit;
+    public Invoice(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
     }
 
     @Override
-    public String displayInfo() {
-        return "Honors Student Member | Course: " + course +
-               " | Bonus Limit: " + bonusLimit +
-               " | Books Borrowed: " + booksBorrowed;
-    }
-}
-
-class FacultyMember extends LibraryMember {
-    private String department;
-
-    public FacultyMember(String memberId, int borrowLimit, String department) {
-        super(memberId, borrowLimit);
-        this.department = department;
-    }
-
-    @Override
-    public String displayInfo() {
-        return "Faculty Member | Department: " + department +
-               " | Books Borrowed: " + booksBorrowed;
+    public String printLabel() {
+        return "Invoice label: " + invoiceNumber;
     }
 }
 
 public class q2 {
 
-    public static String classifyGeneration(LibraryMember member) {
-        if (member instanceof HonorsStudentMember) {
-            return "Multilevel descendant (3 generations deep)";
+    static void printAll(Printable[] items) {
+        for (Printable item : items) {
+            System.out.println(item.printLabel());
         }
-
-        if (member instanceof FacultyMember) {
-            return "Hierarchical sibling (independent branch)";
-        }
-
-        if (member instanceof StudentMember) {
-            return "Student branch";
-        }
-
-        return "General Member";
-    }
-
-    public static int getTotalBooksBorrowed(LibraryMember[] members) {
-        int total = 0;
-
-        for (LibraryMember member : members) {
-            total += member.getBooksBorrowed();
-        }
-
-        return total;
     }
 
     public static void main(String[] args) {
+        PackageBox p = new PackageBox("TRK-88");
+        Invoice i = new Invoice("INV-42");
 
-        LibraryMember general =
-            new LibraryMember("STU1", 3);
+        System.out.println(p.printLabel());
+        System.out.println(i.printLabel());
 
-        StudentMember student =
-            new StudentMember("STU2", 3, "CSE");
-
-        HonorsStudentMember honors =
-            new HonorsStudentMember("STU3", 3, "ECE", 2);
-
-        FacultyMember faculty =
-            new FacultyMember("STU4", 5, "Physics");
-
-        System.out.println(general.displayInfo());
-        System.out.println(student.displayInfo());
-        System.out.println(honors.displayInfo());
-        System.out.println(faculty.displayInfo());
-
-        System.out.println(classifyGeneration(honors));
-        System.out.println(classifyGeneration(faculty));
-
-        student.borrowBook();
-        student.borrowBook();
-
-        honors.borrowBook();
-
-        faculty.borrowBook();
-        faculty.borrowBook();
-        faculty.borrowBook();
-
-        LibraryMember[] members = {
-            student, honors, faculty
-        };
-
-        System.out.println(
-            getTotalBooksBorrowed(members)
-        );
+        printAll(new Printable[]{p, i});
     }
 }

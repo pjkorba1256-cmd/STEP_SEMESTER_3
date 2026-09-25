@@ -1,150 +1,79 @@
-class GymMember {
+abstract class Drone {
 
-    protected int monthlyFee;
-    private int feesPaid;
+    public abstract String fly();
+}
 
-    private static int membersEnrolled = 0;
+interface Trackable {
+    String getLocation();
+}
 
-    public final String membershipNumber;
+class DeliveryDrone extends Drone implements Trackable {
 
-    public GymMember(int monthlyFee) {
+    private String id;
 
-        if (monthlyFee <= 0) {
-            throw new IllegalArgumentException("Invalid monthly fee");
-        }
-
-        membersEnrolled++;
-
-        membershipNumber = "GYM-" + (2000 + membersEnrolled);
-
-        this.monthlyFee = monthlyFee;
-        this.feesPaid = 0;
+    public DeliveryDrone(String id) {
+        this.id = id;
     }
 
-    public void payFee(int amount) {
-        if (amount > 0) {
-            feesPaid += amount;
-        }
+    @Override
+    public String fly() {
+        return id + " flying for delivery";
     }
 
-    public void payFee(int amount, String mode) {
-        payFee(amount);
-    }
-
-    public int getFeesPaid() {
-        return feesPaid;
-    }
-
-    public static boolean isValidReferralCode(String code) {
-
-        if (code == null || code.length() != 4) {
-            return false;
-        }
-
-        if (code.charAt(0) != 'G') {
-            return false;
-        }
-
-        if (!Character.isDigit(code.charAt(1))) {
-            return false;
-        }
-
-        if (!Character.isDigit(code.charAt(2))) {
-            return false;
-        }
-
-        if (!Character.isUpperCase(code.charAt(3))) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static int getMembersEnrolled() {
-        return membersEnrolled;
+    @Override
+    public String getLocation() {
+        return id + " at Sector 4";
     }
 }
 
-class GroupClassMember extends GymMember {
+class ScoutDrone extends Drone {
 
-    private String className;
+    private String id;
 
-    public GroupClassMember(int monthlyFee, String className) {
-        super(monthlyFee);
-        this.className = className;
+    public ScoutDrone(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String fly() {
+        return id + " scouting the area";
+    }
+}
+
+class GroundRobot implements Trackable {
+
+    private String id;
+
+    public GroundRobot(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getLocation() {
+        return id + " at Sector 4";
     }
 }
 
 public class q5 {
 
-    public static String processWeeklyCheckIn(
-            GymMember[] members) {
+    static String getLocationIfTrackable(Object o) {
 
-        int processed = 0;
-        int nullSkipped = 0;
-        int group = 0;
-        int individual = 0;
-
-        for (GymMember member : members) {
-
-            if (member == null) {
-                nullSkipped++;
-                continue;
-            }
-
-            processed++;
-
-            if (member instanceof GroupClassMember) {
-                group++;
-            } else {
-                individual++;
-            }
+        if (o instanceof Trackable) {
+            Trackable t = (Trackable) o;
+            return t.getLocation();
         }
 
-        return processed + " processed | " +
-               nullSkipped + " null skipped | " +
-               group + " group | " +
-               individual + " individual";
+        return "Tracking not available";
     }
 
     public static void main(String[] args) {
 
-        GymMember m1 =
-            new GymMember(1000);
+        DeliveryDrone d = new DeliveryDrone("DR-1");
+        ScoutDrone s = new ScoutDrone("SC-1");
+        GroundRobot g = new GroundRobot("GR-1");
 
-        System.out.println(m1.membershipNumber);
-
-        System.out.println(
-            GymMember.getMembersEnrolled()
-        );
-
-        System.out.println(
-            GymMember.isValidReferralCode("G45B")
-        );
-
-        System.out.println(
-            GymMember.isValidReferralCode("G4B")
-        );
-
-        System.out.println(
-            GymMember.isValidReferralCode("X45B")
-        );
-
-        m1.payFee(500);
-        m1.payFee(500, "UPI");
-
-        System.out.println(
-            m1.getFeesPaid()
-        );
-
-        GymMember[] members = {
-            new GroupClassMember(1500, "Zumba"),
-            null,
-            new GymMember(1000)
-        };
-
-        System.out.println(
-            processWeeklyCheckIn(members)
-        );
+        System.out.println(getLocationIfTrackable(d));
+        System.out.println(getLocationIfTrackable(s));
+        System.out.println(getLocationIfTrackable(g));
     }
 }

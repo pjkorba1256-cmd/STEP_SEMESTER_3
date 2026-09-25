@@ -1,92 +1,53 @@
-class LibraryMember {
-    protected String memberId;
-    protected int borrowLimit;
-    protected int booksBorrowed;
+abstract class KitchenTool {
+    private int speedLevel;
 
-    public LibraryMember(String memberId, int borrowLimit) {
-        if (memberId == null || memberId.trim().isEmpty() || memberId.length() < 4) {
-            throw new IllegalArgumentException("Invalid member ID");
-        }
+    public abstract String prepare();
 
-        if (borrowLimit <= 0) {
-            throw new IllegalArgumentException("Invalid borrow limit");
-        }
-
-        this.memberId = memberId;
-        this.borrowLimit = borrowLimit;
+    public int getSpeedLevel() {
+        return speedLevel;
     }
 
-    public void borrowBook() {
-        if (booksBorrowed < borrowLimit) {
-            booksBorrowed++;
+    public void setSpeedLevel(int speedLevel) {
+        if (speedLevel >= 1 && speedLevel <= 5) {
+            this.speedLevel = speedLevel;
         }
-    }
-
-    public int getBooksBorrowed() {
-        return booksBorrowed;
-    }
-
-    public String displayInfo() {
-        return "General | Books: " + booksBorrowed;
     }
 }
 
-class StudentMember extends LibraryMember {
-    private String course;
+interface Washable {
+    String clean();
+}
 
-    public StudentMember(String memberId, int borrowLimit, String course) {
-        super(memberId, borrowLimit);
-        this.course = course;
-    }
+class Blender extends KitchenTool implements Washable {
 
-    public String getCourse() {
-        return course;
+    public Blender() {
+        super();
     }
 
     @Override
-    public String displayInfo() {
-        return "Student | Course: " + course +
-               " | Books: " + booksBorrowed;
+    public String prepare() {
+        return "Blending at speed " + getSpeedLevel();
+    }
+
+    @Override
+    public String clean() {
+        return "Blender rinsed and dried";
     }
 }
 
 public class q4 {
-
-    public static String batchPrint(LibraryMember[] members) {
-
-        StringBuilder result = new StringBuilder();
-
-        for (LibraryMember member : members) {
-
-            result.append(member.displayInfo());
-
-            if (member instanceof StudentMember) {
-                StudentMember student =
-                    (StudentMember) member;
-
-                result.append(" [Course via downcast: ")
-                      .append(student.getCourse())
-                      .append("]");
-            }
-
-            result.append(" | ");
-        }
-
-        return result.toString();
-    }
-
     public static void main(String[] args) {
+        Blender b = new Blender();
 
-        LibraryMember general =
-            new LibraryMember("LB5", 3);
+        b.setSpeedLevel(3);
 
-        StudentMember student =
-            new StudentMember("STU6", 3, "ECE");
+        System.out.println(b.getSpeedLevel());
 
-        System.out.println(
-            batchPrint(new LibraryMember[] {
-                general, student
-            })
-        );
+        b.setSpeedLevel(9);
+
+        System.out.println(b.getSpeedLevel());
+
+        System.out.println(b.prepare());
+        System.out.println(b.clean());
     }
 }
