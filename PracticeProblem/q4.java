@@ -1,53 +1,81 @@
-abstract class KitchenTool {
-    private int speedLevel;
+import java.util.*;
 
-    public abstract String prepare();
+abstract class Room {
+    int number;
+    boolean booked = false;
 
-    public int getSpeedLevel() {
-        return speedLevel;
+    Room(int number) {
+        this.number = number;
     }
 
-    public void setSpeedLevel(int speedLevel) {
-        if (speedLevel >= 1 && speedLevel <= 5) {
-            this.speedLevel = speedLevel;
-        }
+    abstract double calculatePrice(int days);
+}
+
+class StandardRoom extends Room {
+    StandardRoom(int number) {
+        super(number);
+    }
+
+    double calculatePrice(int days) {
+        return days * 100;
     }
 }
 
-interface Washable {
-    String clean();
+class DeluxeRoom extends Room {
+    DeluxeRoom(int number) {
+        super(number);
+    }
+
+    double calculatePrice(int days) {
+        return days * 150;
+    }
 }
 
-class Blender extends KitchenTool implements Washable {
+class Reservation {
+    Room room;
+    String customer;
+    int days;
 
-    public Blender() {
-        super();
-    }
-
-    @Override
-    public String prepare() {
-        return "Blending at speed " + getSpeedLevel();
-    }
-
-    @Override
-    public String clean() {
-        return "Blender rinsed and dried";
+    Reservation(Room room, String customer, int days) {
+        this.room = room;
+        this.customer = customer;
+        this.days = days;
     }
 }
 
 public class q4 {
+    static void reserve(Room room, String customer, int days) {
+        if (room.booked) {
+            System.out.println("Room " + room.number + " is not available.");
+            return;
+        }
+
+        room.booked = true;
+
+        System.out.println("Reservation confirmed for " + customer +
+                ", Room " + room.number);
+        System.out.println("Price: $" + room.calculatePrice(days));
+    }
+
+    static void cancel(Room room, String customer) {
+        if (room.booked) {
+            room.booked = false;
+            System.out.println("Reservation for " + customer +
+                    ", Room " + room.number + " cancelled successfully.");
+        }
+    }
+
     public static void main(String[] args) {
-        Blender b = new Blender();
+        Room standard = new StandardRoom(101);
+        Room deluxe = new DeluxeRoom(201);
 
-        b.setSpeedLevel(3);
+        System.out.println("Standard Room 101 is available.");
+        reserve(standard, "Customer A", 4);
 
-        System.out.println(b.getSpeedLevel());
+        reserve(standard, "Customer B", 4);
 
-        b.setSpeedLevel(9);
+        cancel(standard, "Customer A");
 
-        System.out.println(b.getSpeedLevel());
-
-        System.out.println(b.prepare());
-        System.out.println(b.clean());
+        reserve(deluxe, "Customer C", 2);
     }
 }

@@ -1,56 +1,90 @@
-abstract class DeliveryNote {
-    public abstract String confirmDelivery();
+import java.util.*;
 
-    public String confirmDelivery(String signature) {
-        return confirmDelivery() + ", signed by " + signature;
+interface PaymentMethod {
+    boolean processPayment(double amount);
+}
+
+class CreditCardPayment implements PaymentMethod {
+    public boolean processPayment(double amount) {
+        System.out.println("Processing Credit Card payment...");
+        return true;
     }
 }
 
-class ParcelNote extends DeliveryNote {
-    private String trackingId;
-
-    public ParcelNote(String trackingId) {
-        this.trackingId = trackingId;
-    }
-
-    @Override
-    public String confirmDelivery() {
-        return "Parcel " + trackingId + " delivered";
+class PayPalPayment implements PaymentMethod {
+    public boolean processPayment(double amount) {
+        System.out.println("Processing PayPal payment...");
+        return false;
     }
 }
 
-class LetterNote extends DeliveryNote {
-    private String trackingId;
+class Product {
+    String name;
+    double price;
 
-    public LetterNote(String trackingId) {
-        this.trackingId = trackingId;
+    Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+}
+
+class Order {
+    String customer;
+    ArrayList<Product> products = new ArrayList<>();
+    String status = "Pending";
+
+    Order(String customer) {
+        this.customer = customer;
     }
 
-    @Override
-    public String confirmDelivery() {
-        return "Letter " + trackingId + " delivered";
+    void addProduct(Product p) {
+        products.add(p);
+    }
+
+    double getTotal() {
+        double total = 0;
+
+        for (Product p : products)
+            total += p.price;
+
+        return total;
+    }
+
+    void pay(PaymentMethod method) {
+        if (products.isEmpty()) {
+            System.out.println("Cannot process payment for an empty order.");
+            return;
+        }
+
+        System.out.println("Payment initiated for Order " + customer);
+
+        if (method.processPayment(getTotal())) {
+            status = "Paid";
+            System.out.println("Payment successful.");
+        } else {
+            System.out.println("Payment failed.");
+        }
+
+        System.out.println("Order status: " + status);
     }
 }
 
 public class q5 {
-
-    static void logAll(DeliveryNote[] notes) {
-        for (DeliveryNote note : notes) {
-            System.out.println(note.confirmDelivery());
-        }
-    }
-
     public static void main(String[] args) {
-        ParcelNote p = new ParcelNote("TRK-1");
+        Order order1 = new Order("X");
 
-        System.out.println(p.confirmDelivery());
-        System.out.println(p.confirmDelivery("J. Smith"));
+        order1.addProduct(new Product("Product A", 100));
+        order1.addProduct(new Product("Product B", 50));
 
-        DeliveryNote ref = p;
+        System.out.println("Order created for Customer X.");
+        order1.pay(new CreditCardPayment());
 
-        logAll(new DeliveryNote[]{
-            ref,
-            new LetterNote("TRK-2")
-        });
+        Order order2 = new Order("Y");
+        order2.pay(new CreditCardPayment());
+
+        Order order3 = new Order("Z");
+        order3.addProduct(new Product("Product C", 200));
+
+        order3.pay(new PayPalPayment());
     }
 }

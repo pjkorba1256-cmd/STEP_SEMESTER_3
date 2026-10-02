@@ -1,52 +1,88 @@
-abstract class Toy {
-    private static int counter = 1000;
-    private final String toyId;
-    protected String name;
+import java.util.*;
 
-    public Toy(String name) {
+abstract class Vehicle {
+    String name;
+    boolean available = true;
+
+    Vehicle(String name) {
         this.name = name;
-        counter++;
-        toyId = "TOY-" + counter;
     }
 
-    public abstract String makeSound();
-
-    public String getToyId() {
-        return toyId;
-    }
+    abstract double calculateCharge(int days);
 }
 
-class ToyCar extends Toy {
-    public ToyCar(String name) {
+class Sedan extends Vehicle {
+    Sedan(String name) {
         super(name);
     }
 
-    @Override
-    public String makeSound() {
-        return name + ": Vroom vroom!";
+    double calculateCharge(int days) {
+        return days * 50;
     }
 }
 
-class ToyRobot extends Toy {
-    public ToyRobot(String name) {
+class SUV extends Vehicle {
+    SUV(String name) {
         super(name);
     }
 
-    @Override
-    public String makeSound() {
-        return name + ": Beep boop!";
+    double calculateCharge(int days) {
+        return days * 80;
+    }
+}
+
+class Customer {
+    String name;
+
+    Customer(String name) {
+        this.name = name;
+    }
+}
+
+class Rental {
+    Vehicle vehicle;
+    Customer customer;
+    int days;
+
+    Rental(Vehicle vehicle, Customer customer, int days) {
+        this.vehicle = vehicle;
+        this.customer = customer;
+        this.days = days;
     }
 }
 
 public class q1 {
+    static void rent(Vehicle v, Customer c, int days) {
+        if (!v.available) {
+            System.out.println(v.name + " is currently unavailable.");
+            return;
+        }
+
+        v.available = false;
+        Rental r = new Rental(v, c, days);
+
+        System.out.println(v.name + " rented successfully by " + c.name);
+        System.out.println("Rental charge: $" + v.calculateCharge(days));
+    }
+
+    static void returnVehicle(Vehicle v, Customer c) {
+        v.available = true;
+        System.out.println(v.name + " returned by " + c.name);
+    }
+
     public static void main(String[] args) {
-        ToyCar c = new ToyCar("Speedster");
-        ToyRobot r = new ToyRobot("Bolt");
+        Customer c1 = new Customer("Customer 1");
+        Customer c2 = new Customer("Customer 2");
+        Customer c3 = new Customer("Customer 3");
 
-        System.out.println(c.makeSound());
-        System.out.println(r.makeSound());
+        Vehicle sedan = new Sedan("Sedan A");
+        Vehicle suv = new SUV("SUV B");
 
-        System.out.println(c.getToyId());
-        System.out.println(r.getToyId());
+        rent(sedan, c1, 3);
+        rent(sedan, c2, 2);
+
+        returnVehicle(sedan, c1);
+
+        rent(suv, c3, 5);
     }
 }

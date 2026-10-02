@@ -1,48 +1,83 @@
-interface Printable {
-    String printLabel();
+abstract class Employee {
+    String name;
+
+    Employee(String name) {
+        this.name = name;
+    }
+
+    abstract boolean canTakeLeave(int days);
 }
 
-class PackageBox implements Printable {
-    private String trackingId;
-
-    public PackageBox(String trackingId) {
-        this.trackingId = trackingId;
+class FullTimeEmployee extends Employee {
+    FullTimeEmployee(String name) {
+        super(name);
     }
 
-    @Override
-    public String printLabel() {
-        return "Package label: " + trackingId;
+    boolean canTakeLeave(int days) {
+        return days <= 30;
     }
 }
 
-class Invoice implements Printable {
-    private String invoiceNumber;
-
-    public Invoice(String invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
+class PartTimeEmployee extends Employee {
+    PartTimeEmployee(String name) {
+        super(name);
     }
 
-    @Override
-    public String printLabel() {
-        return "Invoice label: " + invoiceNumber;
+    boolean canTakeLeave(int days) {
+        return days <= 10;
+    }
+}
+
+class LeaveRequest {
+    Employee employee;
+    String dates;
+    String status = "Pending";
+
+    LeaveRequest(Employee employee, String dates) {
+        this.employee = employee;
+        this.dates = dates;
+    }
+
+    void approve() {
+        if (status.equals("Pending")) {
+            status = "Approved";
+            System.out.println(employee.name + "'s leave request (" + dates + ") approved.");
+        }
+    }
+
+    void reject() {
+        if (status.equals("Pending")) {
+            status = "Rejected";
+            System.out.println(employee.name + "'s leave request (" + dates + ") rejected.");
+        }
+    }
+
+    void changeToPending() {
+        if (!status.equals("Pending"))
+            System.out.println("Cannot change leave request status from "
+                    + status + " to Pending.");
     }
 }
 
 public class q2 {
-
-    static void printAll(Printable[] items) {
-        for (Printable item : items) {
-            System.out.println(item.printLabel());
-        }
-    }
-
     public static void main(String[] args) {
-        PackageBox p = new PackageBox("TRK-88");
-        Invoice i = new Invoice("INV-42");
+        Employee john = new FullTimeEmployee("John");
+        Employee jane = new PartTimeEmployee("Jane");
 
-        System.out.println(p.printLabel());
-        System.out.println(i.printLabel());
+        LeaveRequest r1 = new LeaveRequest(john, "Jan 1-5");
+        System.out.println("Leave request submitted for John (Jan 1-5).");
+        System.out.println("Status: " + r1.status);
 
-        printAll(new Printable[]{p, i});
+        r1.approve();
+        System.out.println("Status: " + r1.status);
+
+        LeaveRequest r2 = new LeaveRequest(jane, "Feb 10-11");
+        System.out.println("Leave request submitted for Jane (Feb 10-11).");
+        System.out.println("Status: " + r2.status);
+
+        r2.reject();
+        System.out.println("Status: " + r2.status);
+
+        r1.changeToPending();
     }
 }
