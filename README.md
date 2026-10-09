@@ -10,6 +10,7 @@
 - **Week 6:** Inheritance and Polymorphism
 - **Week 7:** Abstraction and interface 
 - **Week 8:** Object Class Methods, Inner Classes & UML Diagrams
+- **Week 9:** Introduction to Data Structures
 
 
 ## Completion Status
@@ -24,5 +25,6 @@
 | Week 6 |  Completed |  Completed |
 | Week 7 |  Completed |  Completed |
 | Week 8 |  Completed |  Completed |
+| Week 9 |  Completed |  Completed |
 
-###  All Practice & Assignment Problems for Weeks 1–5 Completed
+###  All Practice & Assignment Problems for Weeks 1–9 Completed
