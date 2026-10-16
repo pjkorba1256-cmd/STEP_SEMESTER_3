@@ -1,24 +1,45 @@
-import java.util.HashSet;
+
+import java.util.*;
 
 public class q3 {
-    static boolean hasPairWithSum(int[] nums, int target) {
-        HashSet<Integer> set = new HashSet<>();
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-        for (int num : nums) {
-            if (set.contains(target - num))
-                return true;
+        Set<String> members = new HashSet<>();
+        List<String> addOutput = new ArrayList<>();
+        List<String> containsOutput = new ArrayList<>();
 
-            set.add(num);
+        while (sc.hasNextLine()) {
+            String line = sc.nextLine().trim();
+            if (line.isEmpty()) continue;
+
+            String[] p = line.split("\\s+");
+
+            if (p[0].equals("ADD")) {
+                String roll = p[1];
+
+                if (members.add(roll)) {
+                    addOutput.add("Added");
+                } else {
+                    addOutput.add("duplicate rejected");
+                }
+            } else if (p[0].equals("CONTAINS")) {
+                String roll = p[1];
+                containsOutput.add(
+                    "contains: " + members.contains(roll));
+            }
         }
 
-        return false;
-    }
+        for (String output : addOutput) {
+            System.out.println(output);
+        }
 
-    public static void main(String[] args) {
-        int[] a = {2, 7, 11, 15};
-        int[] b = {3, 4, 6};
+        System.out.println("member count " + members.size());
 
-        System.out.println(hasPairWithSum(a, 9));
-        System.out.println(hasPairWithSum(b, 20));
+        for (String output : containsOutput) {
+            System.out.println(output);
+        }
+
+        sc.close();
     }
 }

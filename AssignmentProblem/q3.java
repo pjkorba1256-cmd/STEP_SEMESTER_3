@@ -1,31 +1,48 @@
-import java.util.*;
+
+class Node {
+    int data;
+    Node next;
+
+    Node(int data) {
+        this.data = data;
+        this.next = null;
+    }
+}
 
 public class q3 {
-    static void mostPopular(String[] orders) {
-        HashMap<String, Integer> map = new HashMap<>();
 
-        for (String item : orders)
-            map.put(item, map.getOrDefault(item, 0) + 1);
+    static Node reverse(Node head) {
+        Node previous = null;
+        Node current = head;
 
-        String popular = orders[0];
-        int max = map.get(popular);
-
-        for (String item : orders) {
-            if (map.get(item) > max) {
-                popular = item;
-                max = map.get(item);
-            }
+        while (current != null) {
+            Node next = current.next;
+            current.next = previous;
+            previous = current;
+            current = next;
         }
 
-        System.out.println("(" + popular + ", " + max + ")");
+        return previous;
+    }
+
+    static void display(Node head) {
+        Node current = head;
+
+        while (current != null) {
+            System.out.print(current.data + " -> ");
+            current = current.next;
+        }
+
+        System.out.println("null");
     }
 
     public static void main(String[] args) {
-        String[] orders = {
-            "dosa", "idli", "vada", "dosa",
-            "idli", "dosa", "tea"
-        };
+        Node head = new Node(1);
+        head.next = new Node(2);
+        head.next.next = new Node(3);
+        head.next.next.next = new Node(4);
 
-        mostPopular(orders);
+        head = reverse(head);
+        display(head);
     }
 }

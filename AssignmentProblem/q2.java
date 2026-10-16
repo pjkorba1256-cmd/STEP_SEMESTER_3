@@ -1,31 +1,60 @@
-import java.util.*;
+
+class Node {
+    int data;
+    Node next;
+
+    Node(int data) {
+        this.data = data;
+        this.next = null;
+    }
+}
 
 public class q2 {
-    static ArrayList<Integer> mergeTokens(
-            int[] a, int[] b) {
-        ArrayList<Integer> result = new ArrayList<>();
-        int i = 0, j = 0;
 
-        while (i < a.length && j < b.length) {
-            if (a[i] <= b[j])
-                result.add(a[i++]);
-            else
-                result.add(b[j++]);
+    static Node removeAll(Node head, int code) {
+        while (head != null && head.data == code) {
+            head = head.next;
         }
 
-        while (i < a.length)
-            result.add(a[i++]);
+        Node current = head;
 
-        while (j < b.length)
-            result.add(b[j++]);
+        while (current != null && current.next != null) {
+            if (current.next.data == code) {
+                current.next = current.next.next;
+            } else {
+                current = current.next;
+            }
+        }
 
-        return result;
+        return head;
+    }
+
+    static void display(Node head) {
+        if (head == null) {
+            System.out.println("null");
+            return;
+        }
+
+        Node current = head;
+
+        while (current != null) {
+            System.out.print(current.data + " -> ");
+            current = current.next;
+        }
+
+        System.out.println("null");
     }
 
     public static void main(String[] args) {
-        int[] a = {3, 8, 15, 20};
-        int[] b = {5, 8, 12};
+        Node head = new Node(5);
+        head.next = new Node(3);
+        head.next.next = new Node(5);
+        head.next.next.next = new Node(8);
+        head.next.next.next.next = new Node(5);
 
-        System.out.println(mergeTokens(a, b));
+        int code = 5;
+
+        head = removeAll(head, code);
+        display(head);
     }
 }
